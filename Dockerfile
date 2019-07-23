@@ -76,8 +76,6 @@ RUN set -xe \
     php7-xmlwriter \
     php7-zip \
     php7-zlib \
-    && pecl install mongodb \
-    && echo "extension=mongodb.so" > /etc/php7/conf.d/mongodb.ini \
     # install php ext for snappy compressions
     && git clone --recursive --depth=1 https://github.com/kjdev/php-ext-snappy.git \
     && cd php-ext-snappy \
@@ -89,11 +87,6 @@ RUN set -xe \
     # Remove build and dev files
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
-
-
-# Set up cron
-COPY crontab /var/spool/cron/crontabs/www-data
-RUN /usr/bin/crontab /var/spool/cron/crontabs/www-data
 
 # Runtime env vars are envstub'd into config during entrypoint
 ENV SERVER_NAME="localhost"
