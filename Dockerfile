@@ -90,11 +90,6 @@ RUN set -xe \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 
-
-# Set up cron
-COPY crontab /var/spool/cron/crontabs/www-data
-RUN /usr/bin/crontab /var/spool/cron/crontabs/www-data
-
 # Runtime env vars are envstub'd into config during entrypoint
 ENV SERVER_NAME="localhost"
 ENV SERVER_ALIAS=""
