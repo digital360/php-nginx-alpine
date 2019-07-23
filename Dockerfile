@@ -76,8 +76,6 @@ RUN set -xe \
     php7-xmlwriter \
     php7-zip \
     php7-zlib \
-    && pecl install mongodb \
-    && echo "extension=mongodb.so" > /etc/php7/conf.d/mongodb.ini \
     # install php ext for snappy compressions
     && git clone --recursive --depth=1 https://github.com/kjdev/php-ext-snappy.git \
     && cd php-ext-snappy \
