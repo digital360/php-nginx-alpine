@@ -105,7 +105,11 @@ COPY nginx.conf.template /nginx.conf.template
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
 # Install composer helper to speed up download packages
+USER www-data
 RUN composer global require hirak/prestissimo --no-plugins --no-scripts
+
+# reset the user
+USER $USER
 
 # Nginx on :80
 EXPOSE 80
