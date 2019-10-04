@@ -10,9 +10,6 @@ RUN adduser -D -u 1000 -g 1000 -s /bin/sh www-data && \
 RUN  mkdir -p /var/www/.composer && \
   chown -R www-data:www-data /var/www/.composer
 
-# Install a golang port of supervisord
-COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
-
 # latest composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -36,8 +33,9 @@ RUN set -xe \
 # Install tini - 'cause zombies - see: https://github.com/ochinchina/supervisord/issues/60
 # (also pkill hack)
     && apk add \
-	git \
-	snappy-dev \
+    supervisor \
+	  git \
+	  snappy-dev \
     tini \
     gettext \
     dcron \
