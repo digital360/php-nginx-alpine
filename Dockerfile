@@ -1,9 +1,8 @@
-FROM alpine:edge as base
+FROM php:7.4-fpm-alpine
 LABEL builder=true
 
 # Create user
-RUN adduser -D -u 1000 -g 1000 -s /bin/sh www-data && \
-    mkdir -p /var/www/html && \
+RUN mkdir -p /var/www/html && \
     chown -R www-data:www-data /var/www/html
 
 # setup .composer folder and set permissions
