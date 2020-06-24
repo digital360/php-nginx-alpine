@@ -16,10 +16,10 @@ COPY docker/boot.sh /sbin/boot.sh
 # latest composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY docker/auto-fpm.sh /auto-fpm.sh
-COPY docker/custom_nginx.conf /nginx.conf.template
-COPY docker/php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY docker/custom_php.ini /usr/local/etc/php/conf.d/php.ini
+COPY auto-fpm.sh /auto-fpm.sh
+COPY custom_nginx.conf /nginx.conf.template
+COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY custom_php.ini /usr/local/etc/php/conf.d/php.ini
 
 # Install nginx & gettext (envsubst)
 # Create cachedir and fix permissions
@@ -44,7 +44,7 @@ RUN set -xe && \
     rm -rf /var/cache/apk/*
 
 # runit related files
-COPY docker/runit/etc/service /etc/service
+COPY runit/etc/service /etc/service
 
 # Create user
 RUN mkdir -p /var/www/html && \
