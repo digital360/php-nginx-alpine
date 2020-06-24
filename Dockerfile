@@ -11,7 +11,7 @@ ENV SERVER_NAME $SERVER_NAME
 ENV SERVER_ALIAS $SERVER_ALIAS
 ENV SERVER_ROOT $SERVER_ROOT
 
-COPY docker/boot.sh /sbin/boot.sh
+COPY boot.sh /sbin/boot.sh
 
 # latest composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
