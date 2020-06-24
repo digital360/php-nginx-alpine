@@ -1,0 +1,38 @@
+version: '3.5'
+services:
+  app:
+    container_name: 'app'
+    image: engineroom/email-service
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      args:
+        SERVER_NAME: localhost
+        SERVER_ALIAS: localhost
+        SERVER_ROOT: /var/www/html/public
+    environment:
+      - APP_ENV=local
+      - VIRTUAL_HOST=localhost
+      - SERVER_ALIAS=localhost
+      - SERVER_ROOT=/var/www/html/public
+    ports:
+      - 80:80
+    volumes:
+      - ../app:/var/www/html
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f -s http://localhost/health-check || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  mysql:
+    image: mysql
+    container_name: mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      DB_DATABASE: laravel
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: secret
