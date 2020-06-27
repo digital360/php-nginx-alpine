@@ -1,65 +1,40 @@
 FROM php:7-fpm-alpine
 
-STOPSIGNAL SIGCONT
+ARG S6_OVERLAY_RELEASE=https://github.com/just-containers/s6-overlay/releases/latest/download/s6-overlay-amd64.tar.gz
+ENV S6_OVERLAY_RELEASE=${S6_OVERLAY_RELEASE}
 
-# NGINX
-ARG SERVER_NAME
-ARG SERVER_ALIAS
-ARG SERVER_ROOT
+# s6 overlay Download
+ADD ${S6_OVERLAY_RELEASE} /tmp/s6overlay.tar.gz
 
-ENV SERVER_NAME $SERVER_NAME
-ENV SERVER_ALIAS $SERVER_ALIAS
-ENV SERVER_ROOT $SERVER_ROOT
+ADD rootfs /
 
-COPY boot.sh /sbin/boot.sh
+# Build and some of image configuration
+RUN apk add --update --no-cache \
+       bash \
+       gettext \
+       dcron \
+       nginx \
+    && docker-php-ext-install tokenizer pcntl \
+    && docker-php-source delete \
+    && mkdir -p /var/cache/nginx \
+    && chown -R www-data:www-data /var/cache/nginx \
+    && rm -rf /var/cache/apk/* \
+    && tar xzf /tmp/s6overlay.tar.gz -C / \
+    && rm /tmp/s6overlay.tar.gz
+
+# Create web user user
+RUN mkdir -p /var/www/html \
+    && chown -R www-data:www-data /var/www/html
 
 # latest composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY auto-fpm.sh /auto-fpm.sh
-COPY custom_nginx.conf /nginx.conf.template
-COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY custom_php.ini /usr/local/etc/php/conf.d/php.ini
-
-# Install nginx & gettext (envsubst)
-# Create cachedir and fix permissions
-RUN set -xe && \
-	apk add --update --no-cache && \
-# Install tini - 'cause zombies - see: https://github.com/ochinchina/supervisord/issues/60
-# (also pkill hack)
-    apk add \
-    tini \
-    runit \
-    bash \
-    gettext \
-    dcron \
-    nginx && \
-    docker-php-ext-install tokenizer pcntl && \
-    docker-php-source delete && \
-    mkdir -p /var/cache/nginx && \
-    chown -R www-data:www-data /var/cache/nginx && \
-    chown -R www-data:www-data /var/lib/nginx && \
-    chmod +x /sbin/boot.sh && \
-    mkdir /etc/run_once && \
-    rm -rf /var/cache/apk/*
-
-# runit related files
-COPY runit/etc/service /etc/service
-
-# Create user
-RUN mkdir -p /var/www/html && \
-    chown -R www-data:www-data /var/www/html
-
 # setup .composer folder and set permissions
-RUN  mkdir -p /var/www/.composer && \
-  chown -R www-data:www-data /var/www/.composer
+RUN  mkdir -p /var/www/.composer \
+     && chown -R www-data:www-data /var/www/.composer
 
 EXPOSE 80
 WORKDIR /var/www/html
-USER www-data
 
-# reset the user
-USER $USER
-
-ENTRYPOINT ["tini", "--"]
-CMD [ "/sbin/boot.sh" ]
+# Init
+ENTRYPOINT [ "/init" ]
