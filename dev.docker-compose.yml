@@ -11,7 +11,6 @@ services:
       - VIRTUAL_HOST=localhost
       - SERVER_ALIAS=localhost
       - SERVER_ROOT=/var/www/html
-      - MY_ENV=Thilanga
     ports:
       - 80:80
     volumes:
