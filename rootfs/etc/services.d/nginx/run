@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv sh
+
+COMMAND=/usr/sbin/nginx
+PID_FILE=/run/nginx/nginx.pid
+
+# Create pid file's directory
+install -d -o nginx -g nginx ${PID_FILE%/*}
+
+# Test nginx configuration
+${COMMAND} -t -q || (echo 'nginx config has error.' && exit 1)
+
+
+exec ${COMMAND} -c /etc/nginx/nginx.conf -g "pid $PID_FILE; daemon off;"

@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv sh
+
+COMMAND=/usr/local/sbin/php-fpm
+
+PID_FILE=/run/php-fpm/php-fpm.pid
+# Create pid file's directory
+install -d -o www-data -g www-data ${PID_FILE%/*}
+
+# Test nginx configuration
+${COMMAND} -t || (echo 'php-fpm config has error.' && exit 1)
+
+exec php-fpm -R -c /usr/local/etc;
