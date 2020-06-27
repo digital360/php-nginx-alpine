@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
-set -eu
+
+ENV_FILE=/etc/envvars
+if test -f "${ENV_FILE}"; then
+    source /etc/envvars
+fi
 
 exec 2>&1
 

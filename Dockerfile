@@ -19,7 +19,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY auto-fpm.sh /auto-fpm.sh
 COPY custom_nginx.conf /nginx.conf.template
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY custom_php.ini /usr/local/etc/php/conf.d/php.ini
+COPY custom_php.ini /usr/local/etc/php/php.ini
+
+# Set up cron
+COPY crontab /var/spool/cron/crontabs/custom
+RUN /usr/bin/crontab /var/spool/cron/crontabs/custom
 
 # Install nginx & gettext (envsubst)
 # Create cachedir and fix permissions
@@ -44,7 +48,8 @@ RUN set -xe && \
     rm -rf /var/cache/apk/*
 
 # runit related files
-COPY runit/etc/service /etc/service
+ADD runit /
+RUN find /etc/service -name "run" -exec chmod +x {} \;
 
 # Create user
 RUN mkdir -p /var/www/html && \

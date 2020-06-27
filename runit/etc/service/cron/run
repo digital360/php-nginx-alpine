@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+ENV_FILE=/etc/envvars
+if test -f "${ENV_FILE}"; then
+    source /etc/envvars
+fi
+
+set -eu
+exec 2>&1
+
+exec crond -f -L 15 >&2
