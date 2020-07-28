@@ -2,6 +2,15 @@ FROM php:7-fpm-alpine
 
 STOPSIGNAL SIGCONT
 
+# Create user
+RUN adduser -D -u 1000 -g 1000 -s /bin/sh www-data && \
+    mkdir -p /var/www/html && \
+    chown -R www-data:www-data /var/www/html
+
+# setup .composer folder and set permissions
+RUN  mkdir -p /var/www/.composer && \
+  chown -R www-data:www-data /var/www/.composer
+
 # NGINX
 ARG SERVER_NAME
 ARG SERVER_ALIAS
@@ -51,17 +60,8 @@ RUN set -xe && \
 ADD runit /
 RUN find /etc/service -name "run" -exec chmod +x {} \;
 
-# Create user
-RUN mkdir -p /var/www/html && \
-    chown -R www-data:www-data /var/www/html
-
-# setup .composer folder and set permissions
-RUN  mkdir -p /var/www/.composer && \
-  chown -R www-data:www-data /var/www/.composer
-
 EXPOSE 80
 WORKDIR /var/www/html
-USER www-data
 
 # reset the user
 USER $USER
