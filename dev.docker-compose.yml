@@ -6,7 +6,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-      target: dev
+      target: prod
     environment:
       - APP_ENV=local
       - VIRTUAL_HOST=localhost
