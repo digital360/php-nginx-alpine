@@ -70,9 +70,3 @@ USER $USER
 
 ENTRYPOINT ["tini", "--"]
 CMD [ "/sbin/boot.sh" ]
-
-FROM prod as dev
-
-RUN apk --no-cache add shadow && \
-    usermod -u 1000 www-data && \
-    groupmod -g 1000 www-data
