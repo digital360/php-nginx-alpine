@@ -13,8 +13,8 @@ COPY ./php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./custom_php.ini /usr/local/etc/php/php.ini
 
 # Set up cron
-COPY ./crontab /var/spool/cron/crontabs/custom
-RUN /usr/bin/crontab /var/spool/cron/crontabs/custom
+COPY --chown=www-data:www-data ./crontab /var/spool/cron/crontabs/www-data
+RUN chmod 0644 /var/spool/cron/crontabs/www-data && /usr/bin/crontab /var/spool/cron/crontabs/www-data
 
 ENV PHPIZE_DEPS \
     autoconf \
