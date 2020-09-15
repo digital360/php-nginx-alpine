@@ -8,13 +8,11 @@ COPY ./boot.sh /sbin/boot.sh
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY ./auto-fpm.sh /auto-fpm.sh
+RUN chmod +x /auto-fpm.sh
+
 COPY ./custom_nginx.conf /nginx.conf.template
 COPY ./php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./custom_php.ini /usr/local/etc/php/php.ini
-
-# Set up cron
-COPY --chown=www-data:www-data ./crontab /var/spool/cron/crontabs/www-data
-RUN chmod 0644 /var/spool/cron/crontabs/www-data && /usr/bin/crontab /var/spool/cron/crontabs/www-data
 
 ENV PHPIZE_DEPS \
     autoconf \
@@ -31,12 +29,12 @@ ENV PHPIZE_DEPS \
 RUN set -xe && \
 	apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS && \
     apk add \
+    busybox-suid \
     tini \
     curl \
     runit \
     bash \
     gettext \
-    dcron \
     nginx && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j "$(nproc)" gd tokenizer pcntl pdo pdo_mysql mysqli bcmath zip && \
@@ -66,7 +64,11 @@ WORKDIR /var/www/html
 USER www-data
 
 # reset the user
-USER $USER
+USER root
+
+# Set up cron
+COPY --chown=www-data:www-data ./crontab /var/spool/cron/crontabs/www-data
+RUN /usr/bin/crontab /var/spool/cron/crontabs/www-data
 
 ENTRYPOINT ["tini", "--"]
 CMD [ "/sbin/boot.sh" ]
