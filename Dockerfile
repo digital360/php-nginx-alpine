@@ -1,4 +1,4 @@
-FROM php:7-fpm-alpine AS prod
+FROM php:8-fpm-alpine AS prod
 
 STOPSIGNAL SIGCONT
 
@@ -32,9 +32,9 @@ RUN set -xe && \
     busybox-suid \
     tini \
     curl \
-    runit \
     bash \
     gettext \
+    supervisor \
     nginx && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j "$(nproc)" gd tokenizer pcntl pdo pdo_mysql mysqli bcmath zip && \
@@ -44,14 +44,19 @@ RUN set -xe && \
     chmod +x /sbin/boot.sh && \
     mkdir /etc/run_once && \
     docker-php-source delete && \
-#   apk del .build-deps && \
     rm -rf /var/cache/apk/*
 
-# runit related files
-ADD ./runit /
-RUN find /etc/service -name "run" -exec chmod +x {} \;
+# Configure supervisor
+RUN mkdir -p /etc/supervisor.d/
+COPY ./supervisor/supervisord.ini /etc/supervisor.d/supervisord.ini
 
-# Create user
+RUN mkdir -p /run/nginx
+
+# setup php
+RUN mkdir -p /run/php/
+RUN touch /run/php/php-fpm.pid
+
+# Setup docroot
 RUN mkdir -p /var/www/html && \
     chown -R www-data:www-data /var/www/html
 
@@ -70,5 +75,4 @@ USER root
 COPY --chown=www-data:www-data ./crontab /var/spool/cron/crontabs/www-data
 RUN /usr/bin/crontab /var/spool/cron/crontabs/www-data
 
-ENTRYPOINT ["tini", "--"]
-CMD [ "/sbin/boot.sh" ]
+ENTRYPOINT ["tini", "--", "/sbin/boot.sh"]
