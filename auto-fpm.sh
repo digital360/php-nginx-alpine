@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 FPM_PROCESS_MEMORY_MB=128
-RESERVE_INSTANCE_MEMORY=1024
+RESERVE_INSTANCE_MEMORY=2048
 
 FPM_POOL_FILE=/usr/local/etc/php-fpm.d/www.conf
 
