@@ -3,7 +3,7 @@ FROM php:8-fpm-alpine AS prod
 STOPSIGNAL SIGCONT
 
 COPY ./boot.sh /sbin/boot.sh
-RUN chmod +x /auto-fpm.sh
+RUN chmod +x /sbin/boot.sh
 
 # latest composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

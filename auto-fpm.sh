@@ -5,9 +5,9 @@ RESERVE_INSTANCE_MEMORY=2048
 
 FPM_POOL_FILE=/usr/local/etc/php-fpm.d/www.conf
 
-MEM_KB=`grep MemTotal /proc/meminfo | awk '{print $2}'`
-MEM_FOR_FPM_MB=$(($MEM_KB/1024-$RESERVE_INSTANCE_MEMORY))
-FPM_PROCESSES=$(($MEM_FOR_FPM_MB/$FPM_PROCESS_MEMORY_MB))
+MEM_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+MEM_FOR_FPM_MB=$(($MEM_KB / 1024 - $RESERVE_INSTANCE_MEMORY))
+FPM_PROCESSES=$(($MEM_FOR_FPM_MB / $FPM_PROCESS_MEMORY_MB))
 
 echo "Calculated amount of PHP-FPM processes (from $MEM_FOR_FPM_MB MB): $FPM_PROCESSES"
 
