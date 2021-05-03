@@ -3,6 +3,7 @@ FROM php:8-fpm-alpine AS prod
 STOPSIGNAL SIGCONT
 
 COPY ./boot.sh /sbin/boot.sh
+RUN chmod +x /auto-fpm.sh
 
 # latest composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -10,7 +11,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY ./auto-fpm.sh /auto-fpm.sh
 RUN chmod +x /auto-fpm.sh
 
-COPY ./custom_nginx.conf /nginx.conf.template
+COPY ./custom_nginx.conf /etc/nginx/nginx.conf
 COPY ./php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./custom_php.ini /usr/local/etc/php/php.ini
 
@@ -41,8 +42,6 @@ RUN set -xe && \
     mkdir -p /var/cache/nginx && \
     chown -R www-data:www-data /var/cache/nginx && \
     chown -R www-data:www-data /var/lib/nginx && \
-    chmod +x /sbin/boot.sh && \
-    mkdir /etc/run_once && \
     docker-php-source delete && \
     rm -rf /var/cache/apk/*
 
