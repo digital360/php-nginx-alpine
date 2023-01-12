@@ -1,4 +1,4 @@
-FROM php:8-fpm-alpine AS prod
+FROM php:8.1-fpm-alpine AS prod
 
 STOPSIGNAL SIGCONT
 
